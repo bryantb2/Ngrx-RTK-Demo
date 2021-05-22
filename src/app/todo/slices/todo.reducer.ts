@@ -59,10 +59,33 @@ export const reducer = createReducer(
   }))
 );*/
 
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createSlice,
+  createAsyncThunk,
+  PayloadAction,
+  isPending,
+  isRejected,
+  isRejectedWithValue
+} from '@reduxjs/toolkit';
 import { Todo } from '../models';
-import { loadAllItems, loadSingleItem } from '../thunks';
+import { addTodoItem, loadAllItems, loadSingleItem, removeTodoItem, updateTodoItem } from '../thunks';
 import { adapter, initialState, State } from '../states';
+
+const isPendingAction = isPending(
+  loadAllItems,
+  loadSingleItem,
+  addTodoItem,
+  updateTodoItem,
+  removeTodoItem
+)
+
+const isRejectedAction = isRejectedWithValue(
+  loadAllItems,
+  loadSingleItem,
+  addTodoItem,
+  updateTodoItem,
+  removeTodoItem
+)
 
 export const todoSlice = createSlice({
   name: 'todo',
@@ -75,60 +98,45 @@ export const todoSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // matchers allow for type-safe filtering of multiple actions
+      .addMatcher(isPendingAction, (state: State) => ({
+        ...state, loading: true
+      }))
+      .addMatcher(isRejectedAction, (state: State, action) => ({
+        ...state, loading: false, error: action.payload as Error
+      }))
+      // add item
       .addCase(
-        loadAllItems.pending.type,
-        (state: State, action) => ({
-          ...state, loading: true
-        })
+        addTodoItem.fulfilled.type,
+        (state: State, action: PayloadAction<Todo>) =>
+          adapter.addOne({...state, loading: false}, action.payload)
       )
+      // update item
       .addCase(
-        loadAllItems.rejected.type,
-        (state: State, action: PayloadAction<Error>) => ({
-          ...state,
-          loading: false,
-          error: action.payload
-        })
+        updateTodoItem.fulfilled.type,
+        (state: State, action: PayloadAction<Todo>) =>
+          adapter.updateOne({ ...state, loading: false}, { id: action.payload.id, changes: action.payload })
+       )
+      // delete item
+      .addCase(
+        removeTodoItem.fulfilled.type,
+        (state: State, action: PayloadAction<string>) =>
+          adapter.removeOne({ ...state, loading: false }, action.payload)
       )
+      // load all items
       .addCase(
         loadAllItems.fulfilled.type,
         (state: State, action: PayloadAction<Todo[]>) => {
-          adapter.setAll({ ...state, loading: false } as State, action.payload);
+          adapter.setAll({ ...state, loading: false }, action.payload);
         }
       )
+      // loading single item
       .addCase(
-        loadSingleItem.pending.type,
-        (state: State) => ({
-          ...state,
-          loading: true,
-        })
-      )
-      .addCase(
-        loadSingleItem.rejected.type,
-        (state: State, action: PayloadAction<Error>) => ({
-          ...state,
-          loading: false,
-          error: action.payload
-        })
-      )
-      .addCase(
-        loadSingleItem.fulfilled,
+        loadSingleItem.fulfilled.type,
         (state: State, action: PayloadAction<Todo>) =>
-          adapter.upsertOne(action.payload, { ...state, loading: false })
+          adapter.upsertOne({ ...state, loading: false }, action.payload)
       )
+
   }
 })
-
-on(TodoActions.loadAllFailure, (state, { error }) => ({
-  ...state,
-  loading: false,
-  error,
-})),
-on(TodoActions.load, (state, { id }) => ({
-  ...state,
-  loading: true,
-  selectedId: id,
-})),
-  on(TodoActions.loadSuccess, (state, { todo }) =>
-    adapter.upsertOne(todo, { ...state, loading: false })
-  ),
 

@@ -93,7 +93,7 @@ export const loadAllItems = createAsyncThunk(
       const result = await this.todoService.findAll(offset, limit).toPromise()
       return result
     } catch (err: Error) {
-      thunkAPI.rejectWithValue(err)
+      return thunkAPI.rejectWithValue(err)
     }
   }
 )
@@ -134,7 +134,7 @@ export const updateTodoItem = createAsyncThunk(
       this.editDialogRef?.close();
       return result
     } catch (err) {
-      thunkAPI.rejectWithValue(err)
+      return thunkAPI.rejectWithValue(err)
     }
   }
 )
@@ -148,7 +148,7 @@ export const removeTodoItem = createAsyncThunk(
       this.removeDialogRef?.close();
       return result
     } catch (err) {
-      thunkAPI.rejectWithValue(err)
+      return thunkAPI.rejectWithValue(err)
     }
   }
 )
