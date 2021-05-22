@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 
-import { TodoEffects } from './effects';
-import { reducer } from './reducers';
+import { TodoEffects } from './thunks';
+import { reducer } from './slices';
 import { featureName } from './states';
 
 @NgModule({

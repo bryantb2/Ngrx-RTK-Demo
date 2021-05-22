@@ -47,8 +47,8 @@ describe('TodoEffects', () => {
     service = TestBed.inject(TodoService);
 
     // jasmine.createSpy()
-    // effects.createDialogRef = jasmine.createSpyObj('MatDialogRef', ['close']);
-    // spyOn(effects, 'createDialogRef').and.returnValue(1);
+    // thunks.createDialogRef = jasmine.createSpyObj('MatDialogRef', ['close']);
+    // spyOn(thunks, 'createDialogRef').and.returnValue(1);
   });
 
   it('should be created', () => {

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
 import { of } from 'rxjs';
@@ -11,152 +11,175 @@ import {
   TodoEditDialogComponent,
 } from '../containers';
 import { TodoService } from '../services';
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import { Todo } from '../models';
 
-/**
- * Todo effects
- */
+// thunk param interfaces
+export interface IBaseThunkParams {
+  todoService: TodoService;
+}
+
+// CRUD operations
+export type ILoadSingleItem = {
+  itemId: string;
+} //& IBaseThunkParams
+export type ILoadAllItems = {
+  offset?: number;
+  limit?: number;
+} //& IBaseThunkParams
+export type IAddTodoItem = {
+  newItem: Todo
+} //& IBaseThunkParams
+export type IUpdateTodoItem = {
+  updatedItem: Todo
+} //& IBaseThunkParams
+
+export type IRemoveTodoItem = {
+  itemId: string;
+} //& IBaseThunkParams
+
+// dialogs
+export type IShowCreateDialog = {
+  dialog: MatDialog,
+}
+export type IShowEditDialog = {
+  itemToShow: Todo
+}
+export type IShowRemoveDialog = {
+  id: string
+}
+
 @Injectable()
-export class TodoEffects {
+export class TodoThunks {
   createDialogRef?: MatDialogRef<TodoCreateDialogComponent>;
   editDialogRef?: MatDialogRef<TodoEditDialogComponent>;
   removeDialogRef?: MatDialogRef<TodoDeleteDialogComponent>;
-
-  loadAll$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(TodoActions.loadAll),
-      switchMap(({ offset, limit }) =>
-        this.todoService.findAll(offset, limit).pipe(
-          map((result) => TodoActions.loadAllSuccess({ todos: result })),
-          catchError((error) => of(TodoActions.loadAllFailure({ error })))
-        )
-      )
-    )
-  );
-
-  load$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(TodoActions.load),
-      concatMap(({ id }) =>
-        this.todoService.find(id).pipe(
-          map((result) => TodoActions.loadSuccess({ todo: result })),
-          catchError((error) => of(TodoActions.loadFailure({ error })))
-        )
-      )
-    )
-  );
-
-  create$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(TodoActions.create),
-      concatMap(({ todo }) =>
-        this.todoService.create(todo).pipe(
-          map((result) => TodoActions.createSuccess({ todo: result })),
-          catchError((error) => of(TodoActions.createFailure({ error })))
-        )
-      )
-    )
-  );
-
-  update$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(TodoActions.update),
-      concatMap(({ todo }) =>
-        this.todoService.update(todo).pipe(
-          map((result) => TodoActions.updateSuccess({ todo: result })),
-          catchError((error) => of(TodoActions.updateFailure({ error })))
-        )
-      )
-    )
-  );
-
-  remove$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(TodoActions.remove),
-      concatMap(({ id }) =>
-        this.todoService.remove(id).pipe(
-          map((result) => TodoActions.removeSuccess({ id: result })),
-          catchError((error) => of(TodoActions.removeFailure({ error })))
-        )
-      )
-    )
-  );
-
-  showCreateDialog$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(TodoActions.showCreateDialog),
-        tap(() => {
-          this.createDialogRef = this.dialog.open(TodoCreateDialogComponent, {
-            width: '400px',
-          });
-        })
-      ),
-    { dispatch: false }
-  );
-
-  hideCreateDialog$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(TodoActions.createSuccess),
-        tap(() => {
-          this.createDialogRef?.close();
-        })
-      ),
-    { dispatch: false }
-  );
-
-  showEditDialog$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(TodoActions.showEditDialog),
-        tap(({ todo }) => {
-          this.editDialogRef = this.dialog.open(TodoEditDialogComponent, {
-            width: '400px',
-            data: { todo },
-          });
-        })
-      ),
-    { dispatch: false }
-  );
-
-  hideEditDialog$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(TodoActions.updateSuccess),
-        tap(() => {
-          this.editDialogRef?.close();
-        })
-      ),
-    { dispatch: false }
-  );
-
-  showRemoveDialog$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(TodoActions.showRemoveDialog),
-        tap(({ id }) => {
-          this.removeDialogRef = this.dialog.open(TodoDeleteDialogComponent, {
-            data: { id },
-          });
-        })
-      ),
-    { dispatch: false }
-  );
-
-  hideRemoveDialog$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(TodoActions.removeSuccess),
-        tap(() => {
-          this.removeDialogRef?.close();
-        })
-      ),
-    { dispatch: false }
-  );
 
   constructor(
     private actions$: Actions,
     private dialog: MatDialog,
     private todoService: TodoService
   ) {}
+
+  /*hideCreateDialog = createAsyncThunk(
+    'todo/hideCreateDialog',
+    () => {
+      this.createDialogRef?.close();
+    }
+  )*/
+
+  /*hideEditDialog = createAsyncThunk(
+    'todo/hideEditDialog',
+    () => {
+      this.editDialogRef?.close();
+    }
+  )*/
+
+  /*hideRemoveDialog = createAsyncThunk(
+    'todo/hideRemoveDialog',
+    (params: IShowRemoveDialog) => {
+      const { id } = params
+      this.removeDialogRef?.close();
+    }
+  )*/
 }
+
+// CRUD operations
+export const loadAllItems = createAsyncThunk(
+  'todo/loadAllItems',
+  async (params: ILoadAllItems, thunkAPI) => {
+    const { offset, limit } = params
+    try {
+      const result = await this.todoService.findAll(offset, limit).toPromise()
+      return result
+    } catch (err: Error) {
+      thunkAPI.rejectWithValue(err)
+    }
+  }
+)
+
+export const loadSingleItem = createAsyncThunk(
+  'todo/loadSingleItem',
+  async (params: ILoadSingleItem, thunkAPI) => {
+    const { itemId } = params
+    try {
+      const result = await this.todoService.find(itemId).toPromise()
+      return result
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err)
+    }
+  }
+)
+
+export const addTodoItem = createAsyncThunk(
+  'todo/addTodoItem',
+  async (params: IAddTodoItem, thunkAPI) => {
+    const { newItem } = params
+    try {
+      const result = await this.todoService.create(newItem).toPromise()
+      this.createDialogRef?.close();
+      return result
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err)
+    }
+  }
+)
+
+export const updateTodoItem = createAsyncThunk(
+  'todo/updateTodoItem',
+  async (params: IUpdateTodoItem, thunkAPI) => {
+    const { updatedItem } = params
+    try {
+      const result = await this.todoService.update(updatedItem).toPromise()
+      this.editDialogRef?.close();
+      return result
+    } catch (err) {
+      thunkAPI.rejectWithValue(err)
+    }
+  }
+)
+
+export const removeTodoItem = createAsyncThunk(
+  'todo/removeItem',
+  async (params: IRemoveTodoItem, thunkAPI) => {
+    const { itemId } = params
+    try {
+      const result = await this.todoService.remove(itemId).toPromise()
+      this.removeDialogRef?.close();
+      return result
+    } catch (err) {
+      thunkAPI.rejectWithValue(err)
+    }
+  }
+)
+
+// dialog operations
+export const showCreateDialog = createAsyncThunk(
+  'todo/showCreateDialog',
+  () => {
+    this.createDialogRef = this.dialog.open(TodoCreateDialogComponent, {
+      width: '400px',
+    });
+  }
+)
+
+export const showEditDialog = createAsyncThunk(
+  'todo/showEditDialog',
+  (params: IShowEditDialog) => {
+    const { itemToShow } = params
+    this.editDialogRef = this.dialog.open(TodoEditDialogComponent, {
+      width: '400px',
+      data: { todo: itemToShow },
+    });
+  }
+)
+
+export const showRemoveDialog = createAsyncThunk(
+  'todo/showRemoveDialog',
+  (params: IShowRemoveDialog) => {
+    const { id } = params
+    this.removeDialogRef = this.dialog.open(TodoDeleteDialogComponent, {
+      data: { id },
+    });
+  }
+)

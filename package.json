@@ -25,6 +25,7 @@
     "@ngrx/entity": "~11.0.0",
     "@ngrx/router-store": "~11.0.0",
     "@ngrx/store": "~11.0.0",
+    "@reduxjs/toolkit": "^1.5.1",
     "normalize.css": "~8.0.0",
     "rxjs": "~6.6.0",
     "tslib": "~2.1.0",
