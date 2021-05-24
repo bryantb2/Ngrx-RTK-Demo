@@ -18,7 +18,7 @@ export class TodoCreateDialogComponent {
   form = this.fb.group({
     text: ['', Validators.required],
   });
-  loading$ = of(this.store.getState()).pipe(select(TodoSelectors.getLoading));
+  loading$ = this.store.state$.pipe(select(TodoSelectors.getLoading));
 
   constructor(private fb: FormBuilder, private store: ReduxStore, private thunks: TodoThunks) {}
 

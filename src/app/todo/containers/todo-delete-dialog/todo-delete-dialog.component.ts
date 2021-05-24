@@ -3,10 +3,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Store, select } from '@ngrx/store';
 
 import * as TodoSelectors from '../../selectors';
-import { ReduxStore, RootState } from '../../store';
-import { getLoading } from '../../selectors';
-import { of } from 'rxjs';
-import { State } from '../../states';
+import { ReduxStore } from '../../store';
 import { TodoThunks } from '../../thunks';
 
 @Component({
@@ -16,9 +13,9 @@ import { TodoThunks } from '../../thunks';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodoDeleteDialogComponent {
-  loading$ = of(this.store.getState()).pipe(
+  loading$ = this.store.state$.pipe(
     select(TodoSelectors.getLoading)
-  ); //this.store.pipe(select(TodoSelectors.getLoading));
+  );
   id: string;
 
   constructor(

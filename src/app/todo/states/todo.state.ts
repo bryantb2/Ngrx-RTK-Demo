@@ -1,5 +1,3 @@
-//import { EntityState, createEntityAdapter } from '@ngrx/entity';
-
 import { Todo } from '../models';
 import { createEntityAdapter, EntityState } from '@reduxjs/toolkit';
 

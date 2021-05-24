@@ -18,8 +18,6 @@ export class TodoComponent implements OnInit {
   vm$ = combineLatest([
     this.store.state$.pipe(select(TodoSelectors.getLoading)),
     this.store.state$.pipe(select(TodoSelectors.getTodos))
-    //of(this.store.getState()).pipe(select(TodoSelectors.getLoading)),
-    //of(this.store.getState()).pipe(select(TodoSelectors.getTodos)),
   ]).pipe(
     map(
     ([loading, todos ]) =>
