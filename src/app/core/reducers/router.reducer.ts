@@ -1,20 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Navigation } from '@angular/router';
-
-interface RoutingData {
-  url: string,
-  params: {
-    [key: string]: any
-  },
-  query: {
-    [key: string]: any
-  },
-}
-
-export type RoutingState = {
-  state: RoutingData,
-  navigationId: number
-}
+import { RoutingState } from '../states';
 
 export interface NavigationEvent {
   id: number

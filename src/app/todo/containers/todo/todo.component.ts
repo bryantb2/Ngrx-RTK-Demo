@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { Store, select } from '@ngrx/store';
 import { combineLatest, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import {  } from '@reduxjs/toolkit'
 
 import { Todo } from '../../models';
 import * as TodoSelectors from '../../selectors';
 import { ReduxStore } from '../../store';
 import { TodoThunks } from '../../thunks';
 import { ModalService } from '../../services';
+import { select } from '../../selectors';
 
 @Component({
   selector: 'app-todo',

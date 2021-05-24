@@ -1,12 +1,11 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Store, select } from '@ngrx/store';
 
 import { TodoCreateDto } from '../../models';
 import * as TodoSelectors from '../../selectors';
 import { ReduxStore } from '../../store';
-import { of } from 'rxjs';
 import { TodoThunks } from '../../thunks';
+import { select } from '../../selectors';
 
 @Component({
   selector: 'app-todo-create-dialog',

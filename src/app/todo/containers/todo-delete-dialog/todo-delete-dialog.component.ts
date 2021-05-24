@@ -1,10 +1,10 @@
 import { Component, ChangeDetectionStrategy, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Store, select } from '@ngrx/store';
 
 import * as TodoSelectors from '../../selectors';
 import { ReduxStore } from '../../store';
 import { TodoThunks } from '../../thunks';
+import { select } from '../../selectors';
 
 @Component({
   selector: 'app-todo-delete-dialog',

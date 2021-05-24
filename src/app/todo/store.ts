@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { Observable } from 'rxjs';
 
-import { todoReducer, routerReducer, NavigationEvent, routerNavigated, isNavigationEvent } from './slices';
 import { Router } from '@angular/router';
+import { todoReducer } from './slices';
+import { routerReducer, routerNavigated, isNavigationEvent } from '../core'
 
 const rootReducer = combineReducers({
   todo: todoReducer,
