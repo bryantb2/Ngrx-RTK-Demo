@@ -11,6 +11,8 @@ import { Store, select } from '@ngrx/store';
 import * as TodoActions from '../../actions';
 import { Todo, TodoUpdateDto } from '../../models';
 import * as TodoSelectors from '../../selectors';
+import { ReduxStore } from '../../store';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-todo-edit-dialog',
@@ -22,12 +24,12 @@ export class TodoEditDialogComponent implements OnInit {
   form = this.fb.group({
     text: ['', Validators.required],
   });
-  loading$ = this.store.pipe(select(TodoSelectors.getLoading));
+  loading$ = of(this.store.getState()).pipe(select(TodoSelectors.getLoading));
   todo: Todo;
 
   constructor(
     private fb: FormBuilder,
-    private store: Store,
+    private store: ReduxStore,
     @Inject(MAT_DIALOG_DATA) private data: { todo: Todo }
   ) {
     this.todo = this.data.todo;

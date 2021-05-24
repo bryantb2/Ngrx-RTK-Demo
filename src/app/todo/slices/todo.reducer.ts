@@ -37,13 +37,6 @@ const todoSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // matchers allow for type-safe filtering of multiple actions
-      .addMatcher(isPendingAction, (state: State) => ({
-        ...state, loading: true
-      }))
-      .addMatcher(isRejectedAction, (state: State, action) => ({
-        ...state, loading: false, error: action.payload as Error
-      }))
       // add item
       .addCase(
         addTodoItem.fulfilled.type,
@@ -75,6 +68,13 @@ const todoSlice = createSlice({
         (state: State, action: PayloadAction<Todo>) =>
           adapter.upsertOne({ ...state, loading: false }, action.payload)
       )
+      // matchers allow for type-safe filtering of multiple actions
+      .addMatcher(isPendingAction, (state: State) => ({
+        ...state, loading: true
+      }))
+      .addMatcher(isRejectedAction, (state: State, action) => ({
+        ...state, loading: false, error: action.payload as Error
+      }))
   }
 })
 

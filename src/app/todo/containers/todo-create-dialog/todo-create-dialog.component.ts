@@ -2,9 +2,11 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Store, select } from '@ngrx/store';
 
-import * as TodoActions from '../../actions';
 import { TodoCreateDto } from '../../models';
 import * as TodoSelectors from '../../selectors';
+import { ReduxStore } from '../../store';
+import { of } from 'rxjs';
+import { TodoThunks } from '../../thunks';
 
 @Component({
   selector: 'app-todo-create-dialog',
@@ -16,9 +18,9 @@ export class TodoCreateDialogComponent {
   form = this.fb.group({
     text: ['', Validators.required],
   });
-  loading$ = this.store.pipe(select(TodoSelectors.getLoading));
+  loading$ = of(this.store.getState()).pipe(select(TodoSelectors.getLoading));
 
-  constructor(private fb: FormBuilder, private store: Store) {}
+  constructor(private fb: FormBuilder, private store: ReduxStore, private thunks: TodoThunks) {}
 
   save(): void {
     const title: string = this.form.get('text')?.value;

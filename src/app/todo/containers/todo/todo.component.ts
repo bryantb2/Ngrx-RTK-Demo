@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Store, select } from '@ngrx/store';
-import { combineLatest } from 'rxjs';
+import { combineLatest, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import * as TodoActions from '../../actions';
 import { Todo } from '../../models';
 import * as TodoSelectors from '../../selectors';
+import { ReduxStore } from '../../store';
 
 @Component({
   selector: 'app-todo',
@@ -14,14 +15,14 @@ import * as TodoSelectors from '../../selectors';
 })
 export class TodoComponent implements OnInit {
   vm$ = combineLatest([
-    this.store.pipe(select(TodoSelectors.getLoading)),
-    this.store.pipe(select(TodoSelectors.getTodos)),
+    of(this.store.getState()).pipe(select(TodoSelectors.getLoading)),
+    of(this.store.getState()).pipe(select(TodoSelectors.getTodos)),
   ]).pipe(map(([loading, todos]) => ({ loading, todos })));
 
   /**
    * Constructor
    */
-  constructor(private store: Store) {}
+  constructor(private store: ReduxStore) {}
 
   /**
    * Initialize

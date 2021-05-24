@@ -1,11 +1,12 @@
 import { State, adapter } from '../states';
 import { createSelector } from '@reduxjs/toolkit';
+import { RootState } from '../store';
 const { selectAll, selectEntities } = adapter.getSelectors();
 
 /**
  * Selectors
  */
-const selectBaseState = (state: State) => state
+const selectBaseState = (state: RootState) => state.todo
 
 export const getLoading = createSelector(
   selectBaseState,

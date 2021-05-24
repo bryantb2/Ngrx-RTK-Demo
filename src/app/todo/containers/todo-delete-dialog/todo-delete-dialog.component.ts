@@ -4,6 +4,10 @@ import { Store, select } from '@ngrx/store';
 
 import * as TodoActions from '../../actions';
 import * as TodoSelectors from '../../selectors';
+import { ReduxStore, RootState } from '../../store';
+import { getLoading } from '../../selectors';
+import { of } from 'rxjs';
+import { State } from '../../states';
 
 @Component({
   selector: 'app-todo-delete-dialog',
@@ -12,11 +16,13 @@ import * as TodoSelectors from '../../selectors';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodoDeleteDialogComponent {
-  loading$ = this.store.pipe(select(TodoSelectors.getLoading));
+  loading$ = of(this.store.getState()).pipe(
+    select(TodoSelectors.getLoading)
+  ); //this.store.pipe(select(TodoSelectors.getLoading));
   id: string;
 
   constructor(
-    private store: Store,
+    private store: ReduxStore,
     @Inject(MAT_DIALOG_DATA) private data: { id: string }
   ) {
     this.id = this.data.id;

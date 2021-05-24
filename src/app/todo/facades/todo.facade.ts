@@ -4,16 +4,18 @@ import { Store, select } from '@ngrx/store';
 import * as TodoActions from '../actions';
 import { Todo, TodoCreateDto, TodoUpdateDto } from '../models';
 import * as TodoSelectors from '../selectors';
+import { ReduxStore } from '../store';
+import { of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TodoFacade {
-  loading$ = this.store.pipe(select(TodoSelectors.getLoading));
-  todos$ = this.store.pipe(select(TodoSelectors.getTodos));
-  todo$ = this.store.pipe(select(TodoSelectors.getTodo));
+  loading$ = of(this.store.getState()).pipe(select(TodoSelectors.getLoading));
+  todos$ = of(this.store.getState()).pipe(select(TodoSelectors.getTodos));
+  todo$ = of(this.store.getState()).pipe(select(TodoSelectors.getTodo));
 
-  constructor(private store: Store) {}
+  constructor(private store: ReduxStore) {}
 
   /**
    * Load all

@@ -16,13 +16,19 @@ const store = configureStore({
 export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;
 
+type GetState = typeof store.getState
+type Subscribe = typeof store.subscribe
+
 @Injectable()
 export class ReduxStore {
+  // expose redux API
   public dispatch: AppDispatch
-  public value: Store<RootState>
+  public getState: GetState
+  public subscribe: Subscribe
 
   constructor() {
-    this.value = store
+    this.subscribe = store.subscribe
+    this.getState = store.getState
     this.dispatch = store.dispatch
   }
 }
