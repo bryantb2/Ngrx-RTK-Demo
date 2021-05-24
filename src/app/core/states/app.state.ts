@@ -1,5 +1,14 @@
-import { RouterReducerState } from '@ngrx/router-store';
+interface RoutingData {
+  url: string,
+  params: {
+    [key: string]: any
+  },
+  query: {
+    [key: string]: any
+  },
+}
 
-export interface State {
-  router: RouterReducerState;
+export type RoutingState = {
+  state: RoutingData,
+  navigationId: number
 }

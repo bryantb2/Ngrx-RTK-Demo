@@ -6,13 +6,12 @@ import {
 } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Store, select } from '@ngrx/store';
 
 import { Todo, TodoUpdateDto } from '../../models';
 import * as TodoSelectors from '../../selectors';
 import { ReduxStore } from '../../store';
-import { of } from 'rxjs';
 import { TodoThunks } from '../../thunks';
+import { select } from '../../selectors';
 
 @Component({
   selector: 'app-todo-edit-dialog',
