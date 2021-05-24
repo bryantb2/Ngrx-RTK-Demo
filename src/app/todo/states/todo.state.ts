@@ -5,6 +5,7 @@ import { createEntityAdapter, EntityState } from '@reduxjs/toolkit';
 
 /**
  * Feature name
+ */
 export const featureName = 'todo';
 
 /**

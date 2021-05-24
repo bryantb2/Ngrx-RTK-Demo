@@ -1,28 +1,33 @@
-import { createFeatureSelector, createSelector } from '@ngrx/store';
-
-import { State, featureName, adapter } from '../states';
+import { State, adapter } from '../states';
+import { createSelector } from '@reduxjs/toolkit';
+const { selectAll, selectEntities } = adapter.getSelectors();
 
 /**
  * Selectors
  */
-const getTodoState = createFeatureSelector<State>(featureName);
-const { selectAll, selectEntities } = adapter.getSelectors();
+const selectBaseState = (state: State) => state
 
 export const getLoading = createSelector(
-  getTodoState,
+  selectBaseState,
   (state) => state.loading
-);
+)
 
-export const getError = createSelector(getTodoState, (state) => state.error);
+export const getError = createSelector(
+  selectBaseState,
+  (state) => state.error
+)
 
 export const getSelectedId = createSelector(
-  getTodoState,
+  selectBaseState,
   (state) => state.selectedId
 );
 
-export const getTodos = createSelector(getTodoState, selectAll);
+export const getTodos = createSelector(
+  selectBaseState,
+  selectAll
+)
 
-export const getTodoEntities = createSelector(getTodoState, selectEntities);
+export const getTodoEntities = createSelector(selectBaseState, selectEntities);
 
 export const getTodo = createSelector(
   getSelectedId,

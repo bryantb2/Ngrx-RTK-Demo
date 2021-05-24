@@ -1,10 +1,5 @@
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { Actions, ofType, createEffect } from '@ngrx/effects';
-import { of } from 'rxjs';
-import { map, tap, concatMap, switchMap, catchError } from 'rxjs/operators';
-
-import * as TodoActions from '../actions';
 import {
   TodoCreateDialogComponent,
   TodoDeleteDialogComponent,
@@ -13,30 +8,25 @@ import {
 import { TodoService } from '../services';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { Todo } from '../models';
-
-// thunk param interfaces
-export interface IBaseThunkParams {
-  todoService: TodoService;
-}
+import { ReduxStore } from '../store';
 
 // CRUD operations
 export type ILoadSingleItem = {
   itemId: string;
-} //& IBaseThunkParams
+}
 export type ILoadAllItems = {
   offset?: number;
   limit?: number;
-} //& IBaseThunkParams
+}
 export type IAddTodoItem = {
   newItem: Todo
-} //& IBaseThunkParams
+}
 export type IUpdateTodoItem = {
   updatedItem: Todo
-} //& IBaseThunkParams
-
+}
 export type IRemoveTodoItem = {
   itemId: string;
-} //& IBaseThunkParams
+}
 
 // dialogs
 export type IShowCreateDialog = {
@@ -56,32 +46,25 @@ export class TodoThunks {
   removeDialogRef?: MatDialogRef<TodoDeleteDialogComponent>;
 
   constructor(
-    private actions$: Actions,
     private dialog: MatDialog,
-    private todoService: TodoService
+    private todoService: TodoService,
+    private store: ReduxStore
   ) {}
 
-  /*hideCreateDialog = createAsyncThunk(
-    'todo/hideCreateDialog',
-    () => {
-      this.createDialogRef?.close();
-    }
-  )*/
+  loadAll = (params: ILoadAllItems): void =>
+    this.store.dispatch(loadAllItems(params))
 
-  /*hideEditDialog = createAsyncThunk(
-    'todo/hideEditDialog',
-    () => {
-      this.editDialogRef?.close();
-    }
-  )*/
+  loadSingle = (params: ILoadSingleItem): void =>
+    this.store.dispatch(loadSingleItem(params))
 
-  /*hideRemoveDialog = createAsyncThunk(
-    'todo/hideRemoveDialog',
-    (params: IShowRemoveDialog) => {
-      const { id } = params
-      this.removeDialogRef?.close();
-    }
-  )*/
+  addItem = (params: IAddTodoItem): void =>
+    this.store.dispatch(addTodoItem(params))
+
+  updateItem = (params: IUpdateTodoItem): void =>
+    this.store.dispatch(updateTodoItem(params))
+
+  removeItem = (params: IRemoveTodoItem): void =>
+    this.store.dispatch(removeTodoItem(params))
 }
 
 // CRUD operations
