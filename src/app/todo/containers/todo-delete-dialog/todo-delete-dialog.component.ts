@@ -2,12 +2,12 @@ import { Component, ChangeDetectionStrategy, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Store, select } from '@ngrx/store';
 
-import * as TodoActions from '../../actions';
 import * as TodoSelectors from '../../selectors';
 import { ReduxStore, RootState } from '../../store';
 import { getLoading } from '../../selectors';
 import { of } from 'rxjs';
 import { State } from '../../states';
+import { TodoThunks } from '../../thunks';
 
 @Component({
   selector: 'app-todo-delete-dialog',
@@ -23,12 +23,13 @@ export class TodoDeleteDialogComponent {
 
   constructor(
     private store: ReduxStore,
+    private thunks: TodoThunks,
     @Inject(MAT_DIALOG_DATA) private data: { id: string }
   ) {
     this.id = this.data.id;
   }
 
   remove(): void {
-    this.store.dispatch(TodoActions.remove({ id: this.id }));
+    this.thunks.removeItem({ itemId: this.id })
   }
 }

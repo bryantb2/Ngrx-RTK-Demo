@@ -27,6 +27,6 @@ export class TodoCreateDialogComponent {
     const todo: TodoCreateDto = {
       title,
     };
-    this.store.dispatch(TodoActions.create({ todo }));
+    this.thunks.addItem({ newItem: todo })
   }
 }

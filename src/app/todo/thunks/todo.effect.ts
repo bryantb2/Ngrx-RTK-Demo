@@ -7,65 +7,70 @@ import {
 } from '../containers';
 import { ModalService, TodoService } from '../services';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { Todo } from '../models';
+import { Todo, TodoCreateDto, TodoUpdateDto } from '../models';
 import { ReduxStore } from '../store';
-
-// base interface
-interface IBaseParams {
-  todoService: TodoService
-}
 
 // CRUD operations
 export type ILoadSingleItem = {
   itemId: string;
-} & IBaseParams
+}
 export type ILoadAllItems = {
   offset?: number;
   limit?: number;
-} & IBaseParams
+}
 export type IAddTodoItem = {
-  newItem: Todo
-} & IBaseParams
+  newItem: TodoCreateDto
+}
 export type IUpdateTodoItem = {
-  updatedItem: Todo
-} & IBaseParams
+  updatedItem: TodoUpdateDto
+}
 export type IRemoveTodoItem = {
   itemId: string;
-} & IBaseParams
+}
 
 @Injectable()
 export class TodoThunks {
   constructor(
     private store: ReduxStore,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private todoService: TodoService
   ) {}
 
   loadAll = (params: ILoadAllItems): void => {
-    this.store.dispatch(loadAllItems(params));
+    this.store.dispatch(loadAllItems({
+      ...params,
+      todoService: this.todoService
+    }));
   }
 
   loadSingle = (params: ILoadSingleItem): void => {
-    this.store.dispatch(loadSingleItem(params));
+    this.store.dispatch(loadSingleItem({
+      ...params,
+      todoService: this.todoService
+    }));
   }
 
   addItem = (params: IAddTodoItem): void => {
     this.store.dispatch(addTodoItem({
       ...params,
-      createDialogRef: this.modalService.createDialogRef
+      createDialogRef: this.modalService.createDialogRef,
+      todoService: this.todoService
     }));
   }
 
   updateItem = (params: IUpdateTodoItem): void => {
     this.store.dispatch(updateTodoItem({
       ...params,
-      editDialogRef: this.modalService.editDialogRef
+      editDialogRef: this.modalService.editDialogRef,
+      todoService: this.todoService
     }));
   }
 
   removeItem = (params: IRemoveTodoItem): void => {
     this.store.dispatch(removeTodoItem({
       ...params,
-      removeDialogRef: this.modalService.removeDialogRef
+      removeDialogRef: this.modalService.removeDialogRef,
+      todoService: this.todoService
     }));
   }
 }
@@ -73,7 +78,9 @@ export class TodoThunks {
 // CRUD operations
 export const loadAllItems = createAsyncThunk(
   'todo/loadAllItems',
-  async (params: ILoadAllItems, thunkAPI) => {
+  async (params: ILoadAllItems & {
+    todoService: TodoService
+  }, thunkAPI) => {
     const { offset, limit, todoService } = params
     try {
       const result = await todoService.findAll(offset, limit).toPromise()
@@ -86,7 +93,9 @@ export const loadAllItems = createAsyncThunk(
 
 export const loadSingleItem = createAsyncThunk(
   'todo/loadSingleItem',
-  async (params: ILoadSingleItem, thunkAPI) => {
+  async (params: ILoadSingleItem & {
+      todoService: TodoService
+    }, thunkAPI) => {
     const { itemId, todoService } = params
     try {
       const result = await todoService.find(itemId).toPromise()
@@ -100,7 +109,8 @@ export const loadSingleItem = createAsyncThunk(
 export const addTodoItem = createAsyncThunk(
   'todo/addTodoItem',
   async (params: IAddTodoItem & {
-      createDialogRef: MatDialogRef<TodoCreateDialogComponent> | undefined
+      createDialogRef: MatDialogRef<TodoCreateDialogComponent> | undefined,
+      todoService: TodoService
   }, thunkAPI) => {
     const { newItem, todoService, createDialogRef } = params
     try {
@@ -116,7 +126,8 @@ export const addTodoItem = createAsyncThunk(
 export const updateTodoItem = createAsyncThunk(
   'todo/updateTodoItem',
   async (params: IUpdateTodoItem & {
-    editDialogRef: MatDialogRef<TodoEditDialogComponent> | undefined
+    editDialogRef: MatDialogRef<TodoEditDialogComponent> | undefined,
+    todoService: TodoService
   }, thunkAPI) => {
     const { updatedItem, todoService, editDialogRef } = params
     try {
@@ -132,7 +143,8 @@ export const updateTodoItem = createAsyncThunk(
 export const removeTodoItem = createAsyncThunk(
   'todo/removeItem',
   async (params: IRemoveTodoItem & {
-    removeDialogRef: MatDialogRef<TodoDeleteDialogComponent> | undefined
+    removeDialogRef: MatDialogRef<TodoDeleteDialogComponent> | undefined,
+    todoService: TodoService
   }, thunkAPI) => {
     const { itemId, todoService, removeDialogRef } = params
     try {

@@ -58,9 +58,8 @@ const todoSlice = createSlice({
       // load all items
       .addCase(
         loadAllItems.fulfilled.type,
-        (state: State, action: PayloadAction<Todo[]>) => {
-          adapter.setAll({ ...state, loading: false }, action.payload);
-        }
+        (state: State, action: PayloadAction<Todo[]>) =>
+          adapter.setAll({ ...state, loading: false }, action.payload)
       )
       // loading single item
       .addCase(

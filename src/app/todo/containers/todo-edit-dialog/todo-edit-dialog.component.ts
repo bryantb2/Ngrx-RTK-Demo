@@ -8,11 +8,11 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Store, select } from '@ngrx/store';
 
-import * as TodoActions from '../../actions';
 import { Todo, TodoUpdateDto } from '../../models';
 import * as TodoSelectors from '../../selectors';
 import { ReduxStore } from '../../store';
 import { of } from 'rxjs';
+import { TodoThunks } from '../../thunks';
 
 @Component({
   selector: 'app-todo-edit-dialog',
@@ -30,6 +30,7 @@ export class TodoEditDialogComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private store: ReduxStore,
+    private thunks: TodoThunks,
     @Inject(MAT_DIALOG_DATA) private data: { todo: Todo }
   ) {
     this.todo = this.data.todo;
@@ -48,6 +49,6 @@ export class TodoEditDialogComponent implements OnInit {
       completed: this.todo.completed,
       title,
     };
-    this.store.dispatch(TodoActions.update({ todo }));
+    this.thunks.updateItem({ updatedItem: todo })
   }
 }

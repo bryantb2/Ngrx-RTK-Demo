@@ -3,10 +3,11 @@ import { Store, select } from '@ngrx/store';
 import { combineLatest, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import * as TodoActions from '../../actions';
 import { Todo } from '../../models';
 import * as TodoSelectors from '../../selectors';
 import { ReduxStore } from '../../store';
+import { TodoThunks } from '../../thunks';
+import { ModalService } from '../../services';
 
 @Component({
   selector: 'app-todo',
@@ -15,40 +16,54 @@ import { ReduxStore } from '../../store';
 })
 export class TodoComponent implements OnInit {
   vm$ = combineLatest([
-    of(this.store.getState()).pipe(select(TodoSelectors.getLoading)),
-    of(this.store.getState()).pipe(select(TodoSelectors.getTodos)),
-  ]).pipe(map(([loading, todos]) => ({ loading, todos })));
+    this.store.state$.pipe(select(TodoSelectors.getLoading)),
+    this.store.state$.pipe(select(TodoSelectors.getTodos))
+    //of(this.store.getState()).pipe(select(TodoSelectors.getLoading)),
+    //of(this.store.getState()).pipe(select(TodoSelectors.getTodos)),
+  ]).pipe(
+    map(
+    ([loading, todos ]) =>
+      ({ loading, todos })
+    )
+  );
 
   /**
    * Constructor
    */
-  constructor(private store: ReduxStore) {}
+  constructor(
+    private store: ReduxStore,
+    private thunks: TodoThunks,
+    private modalService: ModalService
+  ) {}
 
   /**
    * Initialize
    */
   ngOnInit(): void {
-    this.store.dispatch(TodoActions.loadAll({ offset: 0, limit: 100 }));
+    this.thunks.loadAll({ offset: 0, limit: 100 })
+    this.vm$.subscribe((state) => {
+      console.log('VM updated in todo component: ', state)
+    })
   }
 
   /**
    * Show create dialog
    */
   showCreateDialog(): void {
-    this.store.dispatch(TodoActions.showCreateDialog());
+    this.modalService.showCreateDialog()
   }
 
   /**
    * Show edit dialog
    */
   showEditDialog(todo: Todo): void {
-    this.store.dispatch(TodoActions.showEditDialog({ todo }));
+    this.modalService.showEditDialog(todo)
   }
 
   /**
    * Show remove dialog
    */
   showRemoveDialog(id: string): void {
-    this.store.dispatch(TodoActions.showRemoveDialog({ id }));
+    this.modalService.showRemoveDialog(id)
   }
 }
