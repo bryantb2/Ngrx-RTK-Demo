@@ -7,7 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-//import { CoreModule } from './core';
+import { CoreModule } from './core';
 
 @NgModule({
   declarations: [AppComponent],

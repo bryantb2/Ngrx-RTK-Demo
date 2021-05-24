@@ -1,9 +1,7 @@
 import {
   createSlice,
-  createAsyncThunk,
   PayloadAction,
   isPending,
-  isRejected,
   isRejectedWithValue
 } from '@reduxjs/toolkit';
 import { Todo } from '../models';
