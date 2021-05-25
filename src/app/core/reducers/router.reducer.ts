@@ -34,10 +34,15 @@ const routerSlice = createSlice({
   initialState,
   reducers: {
     routerNavigated: (state: RoutingState, action: PayloadAction<NavigationEvent>) => {
-      const { id, ...rest } = action.payload
+      const { id, queryParams, params, urlAfterRedirects, ...rest } = action.payload
       const newState = {
         ...state,
-        ...rest,
+        state: {
+          ...state.state,
+          ...rest,
+          params: params ? params : {},
+          query: queryParams ? queryParams : {},
+        },
         navigationId: id
       }
       return newState
